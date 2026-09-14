@@ -1,0 +1,29 @@
+# 워크플로우 이름
+name: GitOps CI Pipeline
+
+# main 브랜치에 push되면 실행
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      # GitHub Repository 코드 가져오기
+      - name: 소스코드 가져오기
+        uses: actions/checkout@v4
+
+      # Public EC2 Instance로 파일 전송
+      - name: Public EC2 Instance에 파일 전송
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "html/index.html"
+          target: "/var/www/html"
+          strip_components: 1
